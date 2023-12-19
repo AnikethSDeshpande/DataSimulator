@@ -1,5 +1,7 @@
 from output_handler.console import Console
 from output_handler.csv import CSV
+from output_handler.kafka import Kafka
+
 from template import Template
 from generator import Generate
 
@@ -58,5 +60,12 @@ if __name__ == '__main__':
 
     sim = Simulator(author='Aniket', project='ample-simulation')
     sim.template(template)
+    
+    # sink to csv
     sim.simulate(50, output=CSV, file_path='/Users/ani/tempmetadata/test_data.csv')
+    
+    # sink to console
     sim.simulate(50, output=Console)
+    
+    # sink to kafka
+    sim.simulate(50, output=Kafka, bootstrap_servers='localhost:9092', topic='ample')
