@@ -1,4 +1,5 @@
 from output_handler.console import Console
+from output_handler.csv import CSV
 from template import Template
 from generator import Generate
 
@@ -9,14 +10,13 @@ default_settings = {
     'output': Console
 }
 
-
 class Simulator:
     def __init__(self, **settings):
         self.author = settings.get('author', default_settings['author'])
         self.project = settings.get('project', default_settings['project'])
         self.output = settings.get('output', default_settings['output'])
 
-        self.metadata = {'author': self.author,'project': self.project}
+        self.metadata = {'author': self.author, 'project': self.project}
 
     def template(self, template):
         self.template = Template(template)
@@ -27,7 +27,7 @@ class Simulator:
         
         return Generate(self.template).generate(self.number_of_records)
 
-    def simulate(self, number_of_records=None, output=Console):
+    def simulate(self, number_of_records=None, output=None, **kwargs):
         if not number_of_records:
             raise Exception('number_of_records not specified.')
         
@@ -39,7 +39,7 @@ class Simulator:
         metadata = self.metadata
         data = self._generate()
 
-        self.output(metadata, data)
+        self.output(metadata, data, **kwargs)
     
 
     def __str__(self) -> str:
@@ -58,4 +58,5 @@ if __name__ == '__main__':
 
     sim = Simulator(author='Aniket', project='ample-simulation')
     sim.template(template)
-    sim.simulate(50)
+    sim.simulate(50, output=CSV, file_path='/Users/ani/tempmetadata/test_data.csv')
+    sim.simulate(50, output=Console)
