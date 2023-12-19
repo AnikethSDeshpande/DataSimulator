@@ -3,12 +3,12 @@ from template import Template
 from generator import Generate
 
 
-
 default_settings = {
     'author': 'simulator-001',
     'project': 'simulation-001',
     'output': Console
 }
+
 
 class Simulator:
     def __init__(self, **settings):
@@ -25,7 +25,7 @@ class Simulator:
         if not self.template:
             raise Exception('Template not specified.')
         
-        return Generate(self.template, self.number_of_records)
+        return Generate(self.template).generate(self.number_of_records)
 
     def simulate(self, number_of_records=None, output=Console):
         if not number_of_records:
@@ -37,8 +37,9 @@ class Simulator:
             self.output = output
         
         metadata = self.metadata
+        data = self._generate()
 
-        self.output(metadata, [{'a': 1}, {'b':2}])
+        self.output(metadata, data)
     
 
     def __str__(self) -> str:
@@ -56,4 +57,5 @@ if __name__ == '__main__':
     '''
 
     sim = Simulator(author='Aniket', project='ample-simulation')
-    sim.simulate(5)
+    sim.template(template)
+    sim.simulate(50)

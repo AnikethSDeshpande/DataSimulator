@@ -12,7 +12,7 @@ class Generate:
         self.number_of_records = number_of_records
     
     def generate(self, number_of_records=None):
-        if not (number_of_records or self.number_of_records):
+        if not (self.number_of_records or number_of_records):
             raise Exception('number_of_records is not specified.')
         
         self.number_of_records = number_of_records
