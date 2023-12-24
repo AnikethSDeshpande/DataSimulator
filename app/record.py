@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 
@@ -18,6 +19,9 @@ class Record:
         
         if self.record_type == 'str':
             return StringRecord(record)
+        
+        if self.record_type == 'datetime':
+            return DateTimeRecord(record)
         
         raise Exception('UNSUPPORTED_DATA_TYPE')
     
@@ -82,12 +86,30 @@ class StringRecord:
     
     def __str__(self) -> str:
         return ', '.join([str(r) for r in self.record])
+    
+
+class DateTimeRecord:
+    def __init__(self, record: list) -> None:
+        self.record = self.preprocess(record)
+    
+    def preprocess(self, record):
+        self.name = record[0]
+        self.type = record[1]
+
+        self.start_date = datetime.strptime(record[2], '%Y-%m-%d')
+        self.end_date = datetime.strptime(record[3], '%Y-%m-%d')
+
+        return [self.name, self.type, self.start_date, self.end_date]
+
+    def __str__(self) -> str:
+        return ', '.join([str(r) for r in self.record])
 
 
 if __name__ == '__main__':
-    rec = 'invoice_id, int, 1000, 9999'
+    # record = 'invoice_id, int, 1000, 9999'
     # record = 'customer_name, str, true'
     # record = 'customer_name, str, false, cust-, 001, 999'
+    record = 'billing_date, datetime, 2023-10-01, 2023-10-30'
     
-    r = Record(rec)
+    r = Record(record)
     print(r.record.__dict__)
