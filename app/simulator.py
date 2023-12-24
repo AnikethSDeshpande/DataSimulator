@@ -3,7 +3,7 @@ from output_handler.csv import CSV
 from output_handler.kafka import Kafka
 
 from template import Template
-from generator import Generate
+from generate import Generate
 
 
 default_settings = {
@@ -53,8 +53,9 @@ if __name__ == '__main__':
 
     template = '''
         invoice_id, int, 1000, 9999
+        billing_date, datetime, 2023-10-01, 2023-10-30
         customer_name, str, true 
-        item_id, str, false, itm-, 001, 999
+        item_id, str, false, itm-, 001, 100
         price, float, 1000, 9999
     '''
 
@@ -68,4 +69,5 @@ if __name__ == '__main__':
     sim.simulate(50, output=Console)
     
     # sink to kafka
-    sim.simulate(50, output=Kafka, bootstrap_servers='localhost:9092', topic='ample')
+    sim.simulate(10, output=Kafka, bootstrap_servers='localhost:9092', topic='ample')
+    print('streaming completed...')
