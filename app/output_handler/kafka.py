@@ -12,6 +12,7 @@ class Kafka(OutputHandler):
         self.sink(metadata, data)
 
     def sink(self, metadata, data):
+        print('func called!!!@kafka')
         bootstrap_servers = metadata.get('bootstrap_servers')
         topic = metadata.get('topic')
 

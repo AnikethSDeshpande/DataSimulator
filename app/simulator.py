@@ -4,6 +4,7 @@ from output_handler.kafka import Kafka
 
 from template import Template
 from generate import Generate
+from stream import Stream
 
 
 default_settings = {
@@ -19,19 +20,17 @@ class Simulator:
         self.output = settings.get('output', default_settings['output'])
 
         self.metadata = {'author': self.author, 'project': self.project}
+        self.stream_params = {'duration': 5, 'frequency': 1}
 
     def template(self, template):
         self.template = Template(template)
 
-    def _generate(self):
-        if not self.template:
-            raise Exception('Template not specified.')
-        
-        return Generate(self.template).generate(self.number_of_records)
-
-    def simulate(self, number_of_records=None, output=None, **kwargs):
+    def simulate(self, number_of_records=None, output=None, stream_params=None, **kwargs):
         if not number_of_records:
             raise Exception('number_of_records not specified.')
+        
+        if not self.template:
+            raise Exception('Template not specified.')
         
         self.number_of_records = number_of_records
 
@@ -39,10 +38,19 @@ class Simulator:
             self.output = output
         
         metadata = self.metadata
-        data = self._generate()
+        data = Generate(self.template).generate(self.number_of_records)
 
-        self.output(metadata, data, **kwargs)
-    
+        if not stream_params:
+            self.output(metadata, data, **kwargs)
+            return
+
+        Stream(self.output, 
+               metadata=metadata, 
+               _generate=Generate(self.template),
+               number_of_records=self.number_of_records,
+               stream_params=stream_params, 
+               **kwargs
+            )
 
     def __str__(self) -> str:
         s = f'''author: {self.author}, project: {self.project}'''
@@ -59,7 +67,7 @@ if __name__ == '__main__':
         price, float, 1000, 9999
     '''
 
-    sim = Simulator(author='Aniket', project='ample-simulation')
+    sim = Simulator(author='Aniket', project='sample-simulation')
     sim.template(template)
     
     # sink to csv
@@ -68,6 +76,11 @@ if __name__ == '__main__':
     # sink to console
     sim.simulate(50, output=Console)
     
-    # sink to kafka
-    sim.simulate(10, output=Kafka, bootstrap_servers='localhost:9092', topic='ample')
-    print('streaming completed...')
+    # stream to kafka
+    sim.simulate(
+        number_of_records=2, 
+        output=Kafka, 
+        bootstrap_servers='localhost:9092', 
+        topic='sample',
+        stream_params = {'duration': 10, 'frequency': 5}
+    )
