@@ -1,9 +1,8 @@
-from functools import wraps
 import time
-import copy
+import concurrent.futures
 
 
-def Stream(func=None, **kwargs):
+def stream_worker(func=None, **kwargs):
     duration = kwargs['stream_params'].get('duration')
     frequency = kwargs['stream_params'].get('frequency')
     number_of_records = kwargs['number_of_records']
@@ -37,3 +36,16 @@ def Stream(func=None, **kwargs):
     
     print('streaming completed...')
 
+
+def Stream(func=None, **kwargs):
+    workload = 1
+    if 'users' in kwargs:
+        workload = kwargs.get('users')
+        kwargs.pop('users')
+    
+    max_workers = min(8, workload)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(stream_worker, func, **kwargs) for i in range(workload)]
+        concurrent.futures.wait(futures)
+    

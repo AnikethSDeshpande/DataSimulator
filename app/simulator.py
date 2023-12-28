@@ -78,9 +78,10 @@ if __name__ == '__main__':
     
     # stream to kafka
     sim.simulate(
-        number_of_records=2, 
+        number_of_records=5, 
         output=Kafka, 
         bootstrap_servers='localhost:9092', 
         topic='sample',
-        stream_params = {'duration': 10, 'frequency': 5}
+        stream_params={'duration': 10, 'frequency': 5},
+        users=4
     )
